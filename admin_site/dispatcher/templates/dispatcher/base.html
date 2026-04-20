@@ -313,6 +313,31 @@
         /* toast notification */
         .toast-container { position: fixed; bottom: 20px; right: 20px; z-index: 200; }
 
+        /* ---- DIGEST ---- */
+        .digest-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px; }
+        .digest-card { padding: 16px; }
+        .digest-card-label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: .3px; }
+        .digest-card-value { font-size: 26px; font-weight: 700; margin-top: 4px; color: var(--text); }
+        .digest-bar-wrap { display: flex; height: 10px; border-radius: 5px; overflow: hidden; background: var(--bg); margin-bottom: 12px; }
+        .digest-bar-segment { height: 100%; transition: width .3s; }
+        .digest-legend { display: flex; flex-wrap: wrap; gap: 10px; }
+        .digest-legend-item { display: flex; align-items: center; gap: 4px; font-size: 12px; color: var(--text-secondary); }
+        .legend-dot { width: 8px; height: 8px; border-radius: 2px; flex-shrink: 0; }
+        .digest-house-row { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+        .digest-house-row:last-child { border-bottom: none; }
+        .digest-house-rank { width: 22px; height: 22px; border-radius: 6px; background: var(--bg); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; color: var(--text-secondary); }
+        .digest-status-row { display: flex; align-items: center; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid var(--border); }
+        .digest-status-row:last-child { border-bottom: none; }
+
+        /* ---- SETTINGS ---- */
+        .settings-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border); }
+        .settings-row:last-child { border-bottom: none; }
+        .settings-label { font-size: 13px; font-weight: 500; color: var(--text); }
+        .settings-hint { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+        .settings-value { font-size: 13px; font-weight: 600; color: var(--primary); font-family: 'SF Mono', 'Fira Code', monospace; }
+        .settings-rule { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+        .settings-rule:last-child { border-bottom: none; }
+
         /* ---- MOBILE FILTER SHEET ---- */
         .filter-toggle-mobile { display: none; }
         .filter-sheet { display: none; }
@@ -496,6 +521,11 @@
             .status-tabs a.active { background: var(--primary-light); border-bottom: none; border-radius: 8px; }
 
             .pagination .page-link { padding: 4px 8px; font-size: 12px; }
+
+            .digest-grid { grid-template-columns: repeat(2, 1fr); }
+            .digest-card-value { font-size: 22px; }
+            .settings-row { flex-direction: column; align-items: flex-start; gap: 4px; }
+            .settings-value { font-size: 14px; }
         }
     </style>
 </head>

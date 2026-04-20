@@ -104,11 +104,15 @@ class DigestView(TemplateView):
         ctx["by_sentiment"] = dict(
             today.values_list("sentiment").annotate(cnt=Count("pk"))
         )
+        ctx["by_status"] = dict(
+            today.values_list("status").annotate(cnt=Count("pk"))
+        )
         ctx["top_houses"] = (
             today.values("house__name")
             .annotate(cnt=Count("pk"))
             .order_by("-cnt")[:5]
         )
+        ctx["status_choices"] = Request.STATUS_CHOICES
         return ctx
 
 

@@ -9,29 +9,86 @@
 
 <h5 style="font-weight:600;margin-bottom:16px;">Настройки</h5>
 
-<div class="card" style="padding:20px;">
-    <table style="width:100%;font-size:13px;">
-        <tr style="border-bottom:1px solid var(--border)">
-            <td style="padding:10px 0;color:var(--text-muted);width:200px">Telegram ID директора</td>
-            <td style="padding:10px 0;font-weight:500">{{ settings_mock.director_tg_id }}</td>
-        </tr>
-        <tr style="border-bottom:1px solid var(--border)">
-            <td style="padding:10px 0;color:var(--text-muted)">Время ежедневной сводки</td>
-            <td style="padding:10px 0;font-weight:500">{{ settings_mock.daily_report_time }}</td>
-        </tr>
-        <tr style="border-bottom:1px solid var(--border)">
-            <td style="padding:10px 0;color:var(--text-muted)">Порог сигнала (сообщений)</td>
-            <td style="padding:10px 0;font-weight:500">{{ settings_mock.alert_threshold }}</td>
-        </tr>
-        <tr>
-            <td style="padding:10px 0;color:var(--text-muted)">Модель ИИ</td>
-            <td style="padding:10px 0;font-weight:500">{{ settings_mock.llm_model }}</td>
-        </tr>
-    </table>
+<!-- GENERAL -->
+<div class="card" style="padding:20px;margin-bottom:12px;">
+    <div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:14px;">Общие</div>
+    <div class="settings-row">
+        <div>
+            <div class="settings-label">Telegram ID директора</div>
+            <div class="settings-hint">Получает сигналы 3+ и ежедневную сводку</div>
+        </div>
+        <div class="settings-value">{{ settings_mock.director_tg_id }}</div>
+    </div>
+    <div class="settings-row">
+        <div>
+            <div class="settings-label">Время ежедневной сводки</div>
+            <div class="settings-hint">Автоотправка сводки директору</div>
+        </div>
+        <div class="settings-value">{{ settings_mock.daily_report_time }}</div>
+    </div>
+    <div class="settings-row">
+        <div>
+            <div class="settings-label">Порог повторяющегося сигнала</div>
+            <div class="settings-hint">Сообщений одной категории по дому за день</div>
+        </div>
+        <div class="settings-value">{{ settings_mock.alert_threshold }}</div>
+    </div>
 </div>
 
-<div style="margin-top:12px;color:var(--text-muted);font-size:12px;">
-    Редактирование настроек — в следующей итерации. Сейчас значения задаются в конфиге / БД.
+<!-- AI -->
+<div class="card" style="padding:20px;margin-bottom:12px;">
+    <div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:14px;">ИИ-классификация</div>
+    <div class="settings-row">
+        <div>
+            <div class="settings-label">Модель</div>
+            <div class="settings-hint">Используется для классификации сообщений</div>
+        </div>
+        <div class="settings-value">{{ settings_mock.llm_model }}</div>
+    </div>
+</div>
+
+<!-- CATEGORIES REFERENCE -->
+<div class="card" style="padding:20px;margin-bottom:12px;">
+    <div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:14px;">Категории сигналов</div>
+    <div style="display:flex;flex-wrap:wrap;gap:6px;">
+        <span class="badge badge-type-emergency">Аварийный сигнал</span>
+        <span class="badge badge-type-complaint">Жалоба</span>
+        <span class="badge badge-type-request">Заявка / просьба</span>
+        <span class="badge badge-type-question">Вопрос</span>
+        <span class="badge badge-type-proposal">Предложение</span>
+    </div>
+    <div style="margin-top:12px;font-size:12px;color:var(--text-muted)">
+        Информационное, Благодарность и Шум/оффтоп — не создают обращений
+    </div>
+</div>
+
+<!-- ALERT RULES -->
+<div class="card" style="padding:20px;margin-bottom:12px;">
+    <div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:14px;">Правила уведомлений</div>
+    <div class="settings-rule">
+        <span class="badge badge-status-accepted" style="font-size:11px">Авария</span>
+        <span style="color:var(--text-secondary);flex:1">→ Сразу специалисту + директору</span>
+    </div>
+    <div class="settings-rule">
+        <span class="badge badge-status-in_progress" style="font-size:11px">3+ подряд</span>
+        <span style="color:var(--text-secondary);flex:1">→ Сигнал специалисту + директору</span>
+    </div>
+    <div class="settings-rule">
+        <span class="badge badge-status-done" style="font-size:11px">Сводка</span>
+        <span style="color:var(--text-secondary);flex:1">→ Ежедневно директору в {{ settings_mock.daily_report_time }}</span>
+    </div>
+</div>
+
+<!-- STATUSES REFERENCE -->
+<div class="card" style="padding:20px;">
+    <div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:14px;">Статусы обращений</div>
+    <div style="display:flex;flex-wrap:wrap;gap:6px;">
+        <span class="badge badge-status-accepted">Принято</span>
+        <span class="badge badge-status-in_progress">В работе</span>
+        <span class="badge badge-status-need_info">Нужна информация</span>
+        <span class="badge badge-status-done">Выполнено</span>
+        <span class="badge badge-status-rejected">Отклонено</span>
+    </div>
 </div>
 
 {% endblock %}

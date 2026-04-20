@@ -10,45 +10,89 @@
 
 <h5 style="font-weight:600;margin-bottom:16px;">Сводка за сегодня</h5>
 
-<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px;">
-    <div class="card" style="padding:16px;">
-        <div style="font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.3px">Всего сообщений</div>
-        <div style="font-size:28px;font-weight:700;color:var(--text);margin-top:4px">{{ total }}</div>
+<!-- METRIC CARDS -->
+<div class="digest-grid">
+    <div class="card digest-card">
+        <div class="digest-card-label">Всего сообщений</div>
+        <div class="digest-card-value">{{ total }}</div>
     </div>
-    <div class="card" style="padding:16px;">
-        <div style="font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.3px">Аварийные</div>
-        <div style="font-size:28px;font-weight:700;color:#991B1B;margin-top:4px">{{ by_category.emergency|default:0 }}</div>
+    <div class="card digest-card">
+        <div class="digest-card-label">Аварийные</div>
+        <div class="digest-card-value" style="color:#991B1B">{{ by_category.emergency|default:0 }}</div>
     </div>
-    <div class="card" style="padding:16px;">
-        <div style="font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.3px">Жалобы</div>
-        <div style="font-size:28px;font-weight:700;color:#92400E;margin-top:4px">{{ by_category.complaint|default:0 }}</div>
+    <div class="card digest-card">
+        <div class="digest-card-label">Жалобы</div>
+        <div class="digest-card-value" style="color:#92400E">{{ by_category.complaint|default:0 }}</div>
     </div>
-    <div class="card" style="padding:16px;">
-        <div style="font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.3px">Негатив</div>
-        <div style="font-size:28px;font-weight:700;color:#991B1B;margin-top:4px">{{ by_sentiment.negative|default:0 }}</div>
+    <div class="card digest-card">
+        <div class="digest-card-label">Негатив</div>
+        <div class="digest-card-value" style="color:#991B1B">{{ by_sentiment.negative|default:0 }}</div>
+    </div>
+    <div class="card digest-card">
+        <div class="digest-card-label">Заявки</div>
+        <div class="digest-card-value" style="color:#1E40AF">{{ by_category.request|default:0 }}</div>
+    </div>
+    <div class="card digest-card">
+        <div class="digest-card-label">Вопросы</div>
+        <div class="digest-card-value" style="color:#5B21B6">{{ by_category.question|default:0 }}</div>
+    </div>
+    <div class="card digest-card">
+        <div class="digest-card-label">Предложения</div>
+        <div class="digest-card-value" style="color:#166534">{{ by_category.proposal|default:0 }}</div>
+    </div>
+    <div class="card digest-card">
+        <div class="digest-card-label">Позитив</div>
+        <div class="digest-card-value" style="color:#166534">{{ by_sentiment.positive|default:0 }}</div>
     </div>
 </div>
 
-<div class="card" style="padding:16px;">
-    <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:10px;">Распределение по типам</div>
-    <table style="width:100%;font-size:13px;">
-        <tr><td style="padding:5px 0;color:var(--text-secondary)">Авария</td><td style="text-align:right;font-weight:500">{{ by_category.emergency|default:0 }}</td></tr>
-        <tr><td style="padding:5px 0;color:var(--text-secondary)">Жалоба</td><td style="text-align:right;font-weight:500">{{ by_category.complaint|default:0 }}</td></tr>
-        <tr><td style="padding:5px 0;color:var(--text-secondary)">Заявка</td><td style="text-align:right;font-weight:500">{{ by_category.request|default:0 }}</td></tr>
-        <tr><td style="padding:5px 0;color:var(--text-secondary)">Вопрос</td><td style="text-align:right;font-weight:500">{{ by_category.question|default:0 }}</td></tr>
-        <tr><td style="padding:5px 0;color:var(--text-secondary)">Предложение</td><td style="text-align:right;font-weight:500">{{ by_category.proposal|default:0 }}</td></tr>
-    </table>
+<!-- BAR CHART -->
+<div class="card" style="padding:20px;margin-bottom:12px;">
+    <div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:14px;">Распределение по типам</div>
+    {% with total_val=total %}
+    {% if total_val > 0 %}
+    <div class="digest-bar-wrap">
+        {% with em=by_category.emergency|default:0 comp=by_category.complaint|default:0 req=by_category.request|default:0 que=by_category.question|default:0 pro=by_category.proposal|default:0 %}
+        {% if em > 0 %}<div class="digest-bar-segment" style="width:{{ em|percent:total_val }}%;background:#FEE2E2" title="Авария: {{ em }}"></div>{% endif %}
+        {% if comp > 0 %}<div class="digest-bar-segment" style="width:{{ comp|percent:total_val }}%;background:#FEF3C7" title="Жалоба: {{ comp }}"></div>{% endif %}
+        {% if req > 0 %}<div class="digest-bar-segment" style="width:{{ req|percent:total_val }}%;background:#DBEAFE" title="Заявка: {{ req }}"></div>{% endif %}
+        {% if que > 0 %}<div class="digest-bar-segment" style="width:{{ que|percent:total_val }}%;background:#EDE9FE" title="Вопрос: {{ que }}"></div>{% endif %}
+        {% if pro > 0 %}<div class="digest-bar-segment" style="width:{{ pro|percent:total_val }}%;background:#DCFCE7" title="Предложение: {{ pro }}"></div>{% endif %}
+        {% endwith %}
+    </div>
+    {% endif %}
+    {% endwith %}
+    <div class="digest-legend">
+        <span class="digest-legend-item"><span style="background:#FEE2E2" class="legend-dot"></span> Авария {{ by_category.emergency|default:0 }}</span>
+        <span class="digest-legend-item"><span style="background:#FEF3C7" class="legend-dot"></span> Жалоба {{ by_category.complaint|default:0 }}</span>
+        <span class="digest-legend-item"><span style="background:#DBEAFE" class="legend-dot"></span> Заявка {{ by_category.request|default:0 }}</span>
+        <span class="digest-legend-item"><span style="background:#EDE9FE" class="legend-dot"></span> Вопрос {{ by_category.question|default:0 }}</span>
+        <span class="digest-legend-item"><span style="background:#DCFCE7" class="legend-dot"></span> Предложение {{ by_category.proposal|default:0 }}</span>
+    </div>
 </div>
 
-<div class="card" style="padding:16px;margin-top:12px;">
-    <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:10px;">Топ домов</div>
+<!-- TOP HOUSES -->
+<div class="card" style="padding:20px;margin-bottom:12px;">
+    <div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:14px;">Топ домов по сигналам</div>
     {% for h in top_houses %}
-    <div style="display:flex;justify-content:space-between;padding:5px 0;font-size:13px;border-bottom:1px solid var(--border)">
-        <span style="color:var(--text-secondary)">{{ h.house__name }}</span>
-        <span style="font-weight:500">{{ h.cnt }} сигналов</span>
+    <div class="digest-house-row">
+        <span class="digest-house-rank">{{ forloop.counter }}</span>
+        <span style="color:var(--text-secondary);flex:1">{{ h.house__name }}</span>
+        <span style="font-weight:600;font-size:14px">{{ h.cnt }}</span>
     </div>
     {% empty %}
     <div style="color:var(--text-muted);font-size:13px">Нет данных</div>
+    {% endfor %}
+</div>
+
+<!-- STATUS BREAKDOWN -->
+<div class="card" style="padding:20px;">
+    <div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:14px;">По статусам</div>
+    {% for status_val, status_label in status_choices %}
+    <div class="digest-status-row">
+        <span class="badge badge-status-{{ status_val }}">{{ status_label }}</span>
+        <span style="font-weight:600;font-size:14px">{{ by_status|get_item:status_val }}</span>
+    </div>
     {% endfor %}
 </div>
 
