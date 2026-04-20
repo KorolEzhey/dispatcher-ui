@@ -1,0 +1,96 @@
+{% load dispatch_tags %}
+
+<!-- DETAIL INFO -->
+<div class="detail-field">
+    <div class="detail-label">Номер</div>
+    <div class="detail-value" style="font-weight:500;color:var(--primary)">#{{ request.number }}</div>
+</div>
+<div class="detail-field">
+    <div class="detail-label">Статус</div>
+    <div class="detail-value"><span class="badge badge-status-{{ request.status }}">{{ request.get_status_display }}</span></div>
+</div>
+<div class="detail-field">
+    <div class="detail-label">Тип</div>
+    <div class="detail-value"><span class="badge badge-type-{{ request.type }}">{{ request.get_type_display }}</span></div>
+</div>
+<div class="detail-field">
+    <div class="detail-label">Тональность</div>
+    <div class="detail-value"><span class="badge badge-sentiment-{{ request.sentiment }}">{{ request.get_sentiment_display }}</span></div>
+</div>
+<div class="detail-field">
+    <div class="detail-label">Дом</div>
+    <div class="detail-value">{{ request.house.name }}</div>
+</div>
+<div class="detail-field">
+    <div class="detail-label">Подъезд / квартира</div>
+    <div class="detail-value">
+        {% if request.entrance %}Под. {{ request.entrance }}{% endif %}
+        {% if request.apartment %}, кв. {{ request.apartment }}{% endif %}
+        {% if not request.entrance and not request.apartment %}—{% endif %}
+    </div>
+</div>
+<div class="detail-field">
+    <div class="detail-label">Контакт</div>
+    <div class="detail-value">{{ request.contact|default:"—" }}</div>
+</div>
+<div class="detail-field">
+    <div class="detail-label">Дата создания</div>
+    <div class="detail-value">{{ request.created_at|date:"d.m.Y H:i" }}</div>
+</div>
+{% if request.media %}
+<div class="detail-field">
+    <div class="detail-label">Медиа</div>
+    <div class="detail-value"><a href="{{ request.media }}" target="_blank">Открыть</a></div>
+</div>
+{% endif %}
+
+<hr class="detail-divider">
+
+<div class="detail-field">
+    <div class="detail-label">Текст обращения</div>
+    <div class="detail-value">{{ request.text }}</div>
+</div>
+
+{% if request.summary %}
+<div class="detail-field">
+    <div class="detail-label">Суть (ИИ)</div>
+    <div class="detail-value" style="color:var(--text-secondary)">{{ request.summary }}</div>
+</div>
+{% endif %}
+
+{% if request.comment_to_resident %}
+<hr class="detail-divider">
+<div class="detail-field">
+    <div class="detail-label">Комментарий жителю</div>
+    <div class="detail-value">{{ request.comment_to_resident }}</div>
+</div>
+{% endif %}
+
+{% if request.internal_comment %}
+<div class="detail-field" style="background:#FFFBEB;padding:10px;border-radius:8px;border:1px solid #FDE68A">
+    <div class="detail-label" style="color:#92400E">Внутренний комментарий</div>
+    <div class="detail-value">{{ request.internal_comment }}</div>
+</div>
+{% endif %}
+
+<hr class="detail-divider">
+
+<!-- ACTIONS FORM -->
+<form method="post" action="{% url 'request_detail' request.pk %}"
+      hx-post="{% url 'request_detail' request.pk %}"
+      hx-target="#detail-body"
+      hx-swap="innerHTML"
+      hx-on::after-request="showToast('Статус обновлён')">
+    {% csrf_token %}
+    <div class="detail-actions">
+        <label>{{ form.status.label }}</label>
+        {{ form.status }}
+        <label>{{ form.comment_to_resident.label }}</label>
+        {{ form.comment_to_resident }}
+        <div class="hint">Будет отправлено жителю</div>
+        <label>{{ form.internal_comment.label }}</label>
+        {{ form.internal_comment }}
+        <div class="hint">Внутренний, жителю не виден</div>
+        <button type="submit" class="btn btn-primary">Сохранить</button>
+    </div>
+</form>

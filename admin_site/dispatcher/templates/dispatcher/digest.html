@@ -1,0 +1,55 @@
+{% extends "dispatcher/base.html" %}
+{% load dispatch_tags %}
+
+{% block nav_digest %}active{% endblock %}
+{% block topbar_title %}Сводка{% endblock %}
+
+{% block title %}Сводка — Диспетчер{% endblock %}
+
+{% block content %}
+
+<h5 style="font-weight:600;margin-bottom:16px;">Сводка за сегодня</h5>
+
+<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px;">
+    <div class="card" style="padding:16px;">
+        <div style="font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.3px">Всего сообщений</div>
+        <div style="font-size:28px;font-weight:700;color:var(--text);margin-top:4px">{{ total }}</div>
+    </div>
+    <div class="card" style="padding:16px;">
+        <div style="font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.3px">Аварийные</div>
+        <div style="font-size:28px;font-weight:700;color:#991B1B;margin-top:4px">{{ by_category.emergency|default:0 }}</div>
+    </div>
+    <div class="card" style="padding:16px;">
+        <div style="font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.3px">Жалобы</div>
+        <div style="font-size:28px;font-weight:700;color:#92400E;margin-top:4px">{{ by_category.complaint|default:0 }}</div>
+    </div>
+    <div class="card" style="padding:16px;">
+        <div style="font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.3px">Негатив</div>
+        <div style="font-size:28px;font-weight:700;color:#991B1B;margin-top:4px">{{ by_sentiment.negative|default:0 }}</div>
+    </div>
+</div>
+
+<div class="card" style="padding:16px;">
+    <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:10px;">Распределение по типам</div>
+    <table style="width:100%;font-size:13px;">
+        <tr><td style="padding:5px 0;color:var(--text-secondary)">Авария</td><td style="text-align:right;font-weight:500">{{ by_category.emergency|default:0 }}</td></tr>
+        <tr><td style="padding:5px 0;color:var(--text-secondary)">Жалоба</td><td style="text-align:right;font-weight:500">{{ by_category.complaint|default:0 }}</td></tr>
+        <tr><td style="padding:5px 0;color:var(--text-secondary)">Заявка</td><td style="text-align:right;font-weight:500">{{ by_category.request|default:0 }}</td></tr>
+        <tr><td style="padding:5px 0;color:var(--text-secondary)">Вопрос</td><td style="text-align:right;font-weight:500">{{ by_category.question|default:0 }}</td></tr>
+        <tr><td style="padding:5px 0;color:var(--text-secondary)">Предложение</td><td style="text-align:right;font-weight:500">{{ by_category.proposal|default:0 }}</td></tr>
+    </table>
+</div>
+
+<div class="card" style="padding:16px;margin-top:12px;">
+    <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:10px;">Топ домов</div>
+    {% for h in top_houses %}
+    <div style="display:flex;justify-content:space-between;padding:5px 0;font-size:13px;border-bottom:1px solid var(--border)">
+        <span style="color:var(--text-secondary)">{{ h.house__name }}</span>
+        <span style="font-weight:500">{{ h.cnt }} сигналов</span>
+    </div>
+    {% empty %}
+    <div style="color:var(--text-muted);font-size:13px">Нет данных</div>
+    {% endfor %}
+</div>
+
+{% endblock %}

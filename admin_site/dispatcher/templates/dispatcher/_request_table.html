@@ -1,0 +1,57 @@
+<table class="req-table">
+    <thead>
+        <tr>
+            <th>№</th>
+            <th>Тип</th>
+            <th>Статус</th>
+            <th>Дом</th>
+            <th>Подъезд / кв</th>
+            <th>Тональность</th>
+            <th>Суть</th>
+            <th>Дата</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for req in requests %}
+        <tr data-url="{% url 'request_detail' req.pk %}" onclick="openDetail(this.dataset.url)">
+            <td style="font-weight:500;color:var(--primary)" data-label="">#{{ req.number }}</td>
+            <td data-label="Тип"><span class="badge badge-type-{{ req.type }}">{{ req.get_type_display }}</span></td>
+            <td data-label="Статус"><span class="badge badge-status-{{ req.status }}">{{ req.get_status_display }}</span></td>
+            <td data-label="Дом" style="color:var(--text-secondary)">{{ req.house.name }}</td>
+            <td data-label="Адрес" style="color:var(--text-muted)">
+                {% if req.entrance %}п.{{ req.entrance }}{% endif %}
+                {% if req.apartment %}, кв.{{ req.apartment }}{% endif %}
+                {% if not req.entrance and not req.apartment %}—{% endif %}
+            </td>
+            <td data-label="Тональность"><span class="badge badge-sentiment-{{ req.sentiment }}">{{ req.get_sentiment_display }}</span></td>
+            <td data-label="Суть" style="color:var(--text-secondary);max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ req.summary|default:req.text }}</td>
+            <td data-label="Дата" style="color:var(--text-muted);white-space:nowrap">{{ req.created_at|date:"d.m H:i" }}</td>
+        </tr>
+    {% empty %}
+        <tr><td colspan="8">
+            <div class="empty-state">
+                <svg width="40" height="40" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2M9 5h6"/></svg>
+                <div>Нет обращений</div>
+            </div>
+        </td></tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+{% if is_paginated %}
+<nav>
+    <ul class="pagination">
+        {% if page_obj.has_previous %}
+        <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}&status={{ current_status }}&house={{ request.GET.house }}&type={{ request.GET.type }}&search={{ search }}">&laquo;</a></li>
+        {% endif %}
+        {% for num in page_obj.paginator.page_range %}
+        <li class="page-item {% if page_obj.number == num %}active{% endif %}">
+            <a class="page-link" href="?page={{ num }}&status={{ current_status }}&house={{ request.GET.house }}&type={{ request.GET.type }}&search={{ search }}">{{ num }}</a>
+        </li>
+        {% endfor %}
+        {% if page_obj.has_next %}
+        <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}&status={{ current_status }}&house={{ request.GET.house }}&type={{ request.GET.type }}&search={{ search }}">&raquo;</a></li>
+        {% endif %}
+    </ul>
+</nav>
+{% endif %}

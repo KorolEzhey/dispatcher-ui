@@ -1,0 +1,98 @@
+{% extends "dispatcher/base.html" %}
+{% load dispatch_tags %}
+
+{% block nav_requests %}active{% endblock %}
+{% block topbar_title %}Обращения{% endblock %}
+
+{% block content %}
+
+<!-- STATUS TABS -->
+<div class="status-tabs" id="status-tabs">
+    <a href="{% url 'request_list' %}?house={{ request.GET.house }}&type={{ request.GET.type }}&search={{ request.GET.search }}"
+       hx-get="{% url 'request_list' %}?house={{ request.GET.house }}&type={{ request.GET.type }}&search={{ request.GET.search }}"
+       hx-target="#table-area" hx-swap="innerHTML" hx-push-url="true"
+       hx-on::after-request="updateTabs(this)"
+       class="{% if not current_status %}active{% endif %}">
+        Все<span class="tab-count">{{ status_counts.all }}</span>
+    </a>
+    {% for status_val, status_label in status_choices %}
+    <a href="?status={{ status_val }}&house={{ request.GET.house }}&type={{ request.GET.type }}&search={{ request.GET.search }}"
+       hx-get="?status={{ status_val }}&house={{ request.GET.house }}&type={{ request.GET.type }}&search={{ request.GET.search }}"
+       hx-target="#table-area" hx-swap="innerHTML" hx-push-url="true"
+       hx-on::after-request="updateTabs(this)"
+       class="{% if current_status == status_val %}active{% endif %}">
+        {{ status_label }}<span class="tab-count">{{ status_counts|get_item:status_val }}</span>
+    </a>
+    {% endfor %}
+</div>
+
+<!-- DESKTOP FILTER ROW -->
+<form method="get" class="filter-row" hx-get="{% url 'request_list' %}" hx-target="#table-area" hx-swap="innerHTML" hx-push-url="true"
+      hx-on::after-request="syncTabs()">
+    <input type="hidden" name="status" value="{{ current_status }}">
+    <select name="house">
+        <option value="">Все дома</option>
+        {% for pk, name in filter_form.fields.house.widget.choices %}
+            {% if pk %}
+            <option value="{{ pk }}" {% if request.GET.house == pk|stringformat:"s" %}selected{% endif %}>{{ name }}</option>
+            {% endif %}
+        {% endfor %}
+    </select>
+    <select name="type">
+        <option value="">Все типы</option>
+        <option value="emergency" {% if request.GET.type == "emergency" %}selected{% endif %}>Авария</option>
+        <option value="complaint" {% if request.GET.type == "complaint" %}selected{% endif %}>Жалоба</option>
+        <option value="request" {% if request.GET.type == "request" %}selected{% endif %}>Заявка</option>
+        <option value="question" {% if request.GET.type == "question" %}selected{% endif %}>Вопрос</option>
+        <option value="proposal" {% if request.GET.type == "proposal" %}selected{% endif %}>Предложение</option>
+    </select>
+    <button type="submit" class="btn btn-primary" style="padding:5px 14px;">Фильтр</button>
+    <a href="{% url 'request_list' %}" class="btn btn-outline-secondary" style="padding:5px 14px;">Сброс</a>
+</form>
+
+<!-- MOBILE FILTER BUTTON -->
+<button class="filter-toggle-mobile" onclick="toggleFilterSheet()">
+    Фильтры {% if request.GET.house or request.GET.type %}<span class="filter-dot"></span>{% endif %}
+</button>
+
+<!-- MOBILE FILTER SHEET -->
+<div class="filter-sheet" id="filter-sheet">
+    <div class="filter-sheet-overlay" onclick="toggleFilterSheet()"></div>
+    <div class="filter-sheet-body">
+        <div class="filter-sheet-header">
+            <span>Фильтры</span>
+            <button onclick="toggleFilterSheet()">✕</button>
+        </div>
+        <form method="get" hx-get="{% url 'request_list' %}" hx-target="#table-area" hx-swap="innerHTML" hx-push-url="true"
+              hx-on::after-request="syncTabs(); toggleFilterSheet()">
+            <input type="hidden" name="status" value="{{ current_status }}">
+            <label class="filter-sheet-label">Дом</label>
+            <select name="house" class="filter-sheet-select">
+                <option value="">Все дома</option>
+                {% for pk, name in filter_form.fields.house.widget.choices %}
+                    {% if pk %}
+                    <option value="{{ pk }}" {% if request.GET.house == pk|stringformat:"s" %}selected{% endif %}>{{ name }}</option>
+                    {% endif %}
+                {% endfor %}
+            </select>
+            <label class="filter-sheet-label">Тип</label>
+            <select name="type" class="filter-sheet-select">
+                <option value="">Все типы</option>
+                <option value="emergency" {% if request.GET.type == "emergency" %}selected{% endif %}>Авария</option>
+                <option value="complaint" {% if request.GET.type == "complaint" %}selected{% endif %}>Жалоба</option>
+                <option value="request" {% if request.GET.type == "request" %}selected{% endif %}>Заявка</option>
+                <option value="question" {% if request.GET.type == "question" %}selected{% endif %}>Вопрос</option>
+                <option value="proposal" {% if request.GET.type == "proposal" %}selected{% endif %}>Предложение</option>
+            </select>
+            <button type="submit" class="btn btn-primary" style="width:100%;margin-top:8px;">Применить</button>
+        </form>
+        <a href="{% url 'request_list' %}" class="btn btn-outline-secondary" style="width:100%;margin-top:8px;text-align:center;display:block;">Сбросить</a>
+    </div>
+</div>
+
+<!-- TABLE -->
+<div id="table-area">
+{% include "dispatcher/_request_table.html" %}
+</div>
+
+{% endblock %}
